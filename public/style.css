@@ -14,6 +14,7 @@ body {
     border-radius: 15px;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
     width: 400px;
+    box-sizing: border-box;
 }
 
 h1 {
@@ -64,6 +65,7 @@ label {
 input {
     display: block;
     width: 100%;
+    box-sizing: border-box;
     padding: 0.75rem;
     margin-bottom: 1rem;
     border: 1px solid #ddd;
@@ -93,4 +95,56 @@ button:hover {
 
 #user-info {
     text-align: center;
+}
+
+#todo-list {
+    list-style: none;
+    padding: 0;
+}
+
+#todo-list li {
+    margin-bottom: 1rem;
+    padding: 0.5rem 0.75rem;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.todo-text {
+    flex: 1;
+    margin-right: 10px;
+}
+
+.todo-actions {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.todo-actions button {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
+    width: auto;
+}
+
+#user-info button {
+    width: auto;
+    padding: 0.4rem 0.8rem;
+    font-size: 0.9rem;
+    margin-top: 1rem;
+    background-color: rgb(225, 5, 5);
+}
+
+#info {
+    text-align: left;
+    padding: 0.5rem 1rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-top: 1rem;
 }

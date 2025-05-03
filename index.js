@@ -26,8 +26,16 @@ app.post('/signup', function(req, res) {
     if(existingUser) {
         res.status(401).send({
             message: "User already exists. Please sign in."
-        })
+        });
         return ;
+    }
+    
+    const existingUsername = users.find(user => user.username === username);
+    if(existingUsername) {
+        res.status(401).send({
+            message: "Username taken. Try another!"
+        });
+        return;
     }
 
     users.push({

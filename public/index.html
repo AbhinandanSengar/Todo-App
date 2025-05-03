@@ -40,7 +40,7 @@
         </div>
 
         <div id="user-info" class="hidden">
-            <h4>User Information</h4>
+            <h3>User Information</h3>
             <div id="info"></div>
             <button onclick="logout()">Log Out</button>
         </div>
@@ -147,9 +147,11 @@
             todos.forEach(todo => {
                 const li = document.createElement('li');
                 li.innerHTML = `
-                    ${todo.completed ? `<s>${todo.todoTitle}</s>`: todo.todoTitle}
-                    <button onclick="markDone(${todo.id})">Done</button>
-                    <button onclick="deleteTodo(${todo.id})">Delete</button>
+                    <span class="todo-text">${todo.completed ? `<s>${todo.todoTitle}</s>`: todo.todoTitle}</span>
+                    <div class="todo-actions">
+                        <button id="smallButton" onclick="markDone(${todo.id})">Mark as Done</button>
+                        <button id="smallButton" onclick="deleteTodo(${todo.id})">Delete</button>
+                    </div>
                 `;
                 list.appendChild(li);
             });

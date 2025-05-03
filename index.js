@@ -5,9 +5,12 @@ const JWT_SECRET = "abhinandan1243";
 const app = express();
 app.use(express.json());
 
+//serve CSS
+app.use(express.static("public"));
+
 let users = [];
 
-//connecting FE to BE
+//serve HTML
 app.get('/', function(req, res) {
     res.sendFile(__dirname + "/public/index.html")
 })

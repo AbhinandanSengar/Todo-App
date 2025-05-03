@@ -117,9 +117,15 @@ app.get('/profile', auth, function(req, res) {
 app.get('/todos', auth, function(req, res) {
     const userDetails = users.find(user => user.username === req.username);
 
-    res.send({
-        message: `Hi ${userDetails.name}`
-    })
+    if(userDetails) {
+        res.send({
+            message: "Hi" + userDetails.username
+        })
+    } else {
+        res.status(404).send({
+            message: "user not found!"
+        })
+    }
 })
 
-app.listen(3000);
+app.listen(PORT);

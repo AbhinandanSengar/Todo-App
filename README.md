@@ -22,7 +22,7 @@ Express.js
 
 JSON Web Token (JWT)
 
-# 🚀 Features
+🚀 Features
 
 🔐 JWT-based authentication
 

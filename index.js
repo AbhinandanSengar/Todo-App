@@ -7,6 +7,11 @@ app.use(express.json());
 
 let users = [];
 
+//connecting FE to BE
+app.get('/', function(req, res) {
+    res.sendFile(__dirname + "/public/index.html")
+})
+
 //Sign-Up Route
 app.post('/signup', function(req, res) {
     const name = req.body.name;
@@ -103,6 +108,15 @@ app.get('/profile', auth, function(req, res) {
             message: "Profile not found!"
         })
     }
+})
+
+//Todo Route
+app.get('/todos', auth, function(req, res) {
+    const userDetails = users.find(user => user.username === req.username);
+
+    res.send({
+        message: `Hi ${userDetails.name}`
+    })
 })
 
 app.listen(3000);

@@ -4,8 +4,134 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Todo Application</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.7.7/axios.min.js"></script>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <h1>Todo App</h1>
+
+    <div id="signup">
+        <input type="text" id="signup-name" placeholder="Name">
+        <input type="text" id="signup-username" placeholder="Username">
+        <input type="email" id="signup-email" placeholder="Email">
+        <input type="password" id="signup-password" placeholder="Password">
+        <button onclick="signup()">Sign Up</button>
+    </div>
+
+    <div id="signin">
+        <input type="text" id="signin-username" placeholder="Username">
+        <input type="password" id="signin-password" placeholder="Password">
+        <button onclick="signin()">Sign In</button>
+    </div>
+
+    <div id="user-info">
+        <h4>User Information</h4>
+        <div id="info"></div>
+        <button onclick="logout()">Log Out</button>
+    </div>
+
+    <script>
+        async function signup() {
+            const name = document.getElementById("signup-name").value;
+            const username = document.getElementById("signup-username").value;
+            const email = document.getElementById("signup-email").value;
+            const password = document.getElementById("signup-password").value;
+
+            try {
+                const response = await axios.post("http://localhost:3000/signup", {
+                    name: name,
+                    username: username,
+                    email: email,
+                    password: password
+                });
+
+                alert("Signed up successfully");
+            } catch(error) {
+                alert("Signup failed: " + (error.response.data.message));
+            }
+
+            location.reload();
+        }
+
+        async function signin() {
+            const username = document.getElementById("signin-username").value;
+            const password = document.getElementById("signin-password").value;
+
+            try {
+                const response = await axios.post("http://localhost:3000/signin", {
+                    username: username,
+                    password: password
+                })
     
+                localStorage.setItem("token", response.data.token)
+    
+                alert("Signed in successfully")
+    
+                location.reload();
+            } catch (error) {
+                alert("Signin failed: " + error.response.data.message);
+            }
+
+        }
+
+        async function generateUserInformation() {
+            const token = localStorage.getItem("token");
+
+            if(token) {
+                const response = await axios.get("http://localhost:3000/profile", {
+                    headers: {
+                        Authorization: token
+                    }
+                });
+
+                document.getElementById("info").innerHTML = 
+                    "Name: " + response.data.name + 
+                    " Username: " + response.data.username + 
+                    " Email: " + response.data.email;
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem("token");
+
+            location.reload();
+        }
+ 
+        function showSignIn() {
+            document.getElementById("signin").classList.remove("hidden");
+            document.getElementById("signup").classList.add("hidden");
+            document.getElementById("tab-signin").classList.add("active");
+            document.getElementById("tab-signup").classList.remove("active");
+        }
+
+        function showSignUp() {
+            document.getElementById("signin").classList.add("hidden");
+            document.getElementById("signup").classList.remove("hidden");
+            document.getElementById("tab-signin").classList.remove("active");
+            document.getElementById("tab-signup").classList.add("active");
+        }
+        
+        window.onload = async function() {
+            const token = localStorage.getItem("token");
+
+            const signup = document.getElementById("signup");
+            const signin = document.getElementById("signin");
+            const userinfo = document.getElementById("user-info");
+
+            if(token) {
+                try {
+                    await generateUserInformation();
+                    signup.classList.add("hidden");
+                    signin.classList.add("hidden");
+                    userinfo.classList.remove("hidden");
+                } catch (error) {
+                    localStorage.removeItem("token");
+                    showSignIn();
+                }
+            } else {
+                showSignIn();
+            }
+        };
+    </script>
 </body>
 </html>

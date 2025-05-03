@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,27 +8,42 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.7.7/axios.min.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-    <h1>Todo App</h1>
+    <div class="card">
+        <h1>Todos</h1>
+        <p class="subtitle" id="welcome-text">Welcome! Please enter your details</p>
 
-    <div id="signup">
-        <input type="text" id="signup-name" placeholder="Name">
-        <input type="text" id="signup-username" placeholder="Username">
-        <input type="email" id="signup-email" placeholder="Email">
-        <input type="password" id="signup-password" placeholder="Password">
-        <button onclick="signup()">Sign Up</button>
-    </div>
+        <div class="tabs" id="tabs">
+            <span id="tab-signin" class="active" onclick="showSignIn()">Sign In</span>
+            <span id="tab-signup" onclick="showSignUp()">Sign Up</span>
+        </div>
 
-    <div id="signin">
-        <input type="text" id="signin-username" placeholder="Username">
-        <input type="password" id="signin-password" placeholder="Password">
-        <button onclick="signin()">Sign In</button>
-    </div>
+        <div id="signin">
+            <label for="signin-username">Username</label>
+            <input type="text" id="signin-username" placeholder="Enter your username">
+            <label for="signin-password">Password</label>
+            <input type="password" id="signin-password" placeholder="Enter your password">
+            <button onclick="signin()">Sign In</button>
+        </div>
 
-    <div id="user-info">
-        <h4>User Information</h4>
-        <div id="info"></div>
-        <button onclick="logout()">Log Out</button>
+        <div id="signup" class="hidden">
+            <label for="signup-name">Name</label>
+            <input type="text" id="signup-name" placeholder="Enter your name">
+            <label for="signup-username">Username</label>
+            <input type="text" id="signup-username" placeholder="Enter your username">
+            <label for="signup-email">Email</label>
+            <input type="email" id="signup-email" placeholder="Enter your email">
+            <label for="signup-password">Password</label>
+            <input type="password" id="signup-password" placeholder="Enter your password">
+            <button onclick="signup()">Sign Up</button>
+        </div>
+
+        <div id="user-info" class="hidden">
+            <h4>User Information</h4>
+            <div id="info"></div>
+            <button onclick="logout()">Log Out</button>
+        </div>
     </div>
 
     <script>
@@ -37,17 +53,21 @@
             const email = document.getElementById("signup-email").value;
             const password = document.getElementById("signup-password").value;
 
+            if (!name || !username || !email || !password) {
+                alert("Please fill in all the details.");
+                return;
+            }
+
             try {
                 const response = await axios.post("http://localhost:3000/signup", {
-                    name: name,
-                    username: username,
-                    email: email,
-                    password: password
+                    name,
+                    username,
+                    email,
+                    password
                 });
-
                 alert("Signed up successfully");
-            } catch(error) {
-                alert("Signup failed: " + (error.response.data.message));
+            } catch (error) {
+                alert("Signup failed: " + error.response?.data?.message || error.message);
             }
 
             location.reload();
@@ -59,44 +79,38 @@
 
             try {
                 const response = await axios.post("http://localhost:3000/signin", {
-                    username: username,
-                    password: password
-                })
-    
-                localStorage.setItem("token", response.data.token)
-    
-                alert("Signed in successfully")
-    
+                    username,
+                    password
+                });
+
+                localStorage.setItem("token", response.data.token);
+                alert("Signed in successfully");
                 location.reload();
             } catch (error) {
-                alert("Signin failed: " + error.response.data.message);
+                alert("Signin failed: " + error.response?.data?.message || error.message);
             }
-
         }
 
         async function generateUserInformation() {
             const token = localStorage.getItem("token");
 
-            if(token) {
-                const response = await axios.get("http://localhost:3000/profile", {
-                    headers: {
-                        Authorization: token
-                    }
-                });
+            const response = await axios.get("http://localhost:3000/profile", {
+                headers: {
+                    Authorization: token
+                }
+            });
 
-                document.getElementById("info").innerHTML = 
-                    "Name: " + response.data.name + 
-                    " Username: " + response.data.username + 
-                    " Email: " + response.data.email;
-            }
+            document.getElementById("info").innerHTML =
+                "Name: " + response.data.name +
+                "<br>Username: " + response.data.username +
+                "<br>Email: " + response.data.email;
         }
 
         function logout() {
             localStorage.removeItem("token");
-
             location.reload();
         }
- 
+
         function showSignIn() {
             document.getElementById("signin").classList.remove("hidden");
             document.getElementById("signup").classList.add("hidden");
@@ -110,20 +124,24 @@
             document.getElementById("tab-signin").classList.remove("active");
             document.getElementById("tab-signup").classList.add("active");
         }
-        
-        window.onload = async function() {
+
+        window.onload = async function () {
             const token = localStorage.getItem("token");
 
             const signup = document.getElementById("signup");
             const signin = document.getElementById("signin");
             const userinfo = document.getElementById("user-info");
 
-            if(token) {
+            if (token) {
                 try {
-                    await generateUserInformation();
-                    signup.classList.add("hidden");
                     signin.classList.add("hidden");
+                    signup.classList.add("hidden");
                     userinfo.classList.remove("hidden");
+
+                    document.getElementById("welcome-text").classList.add("hidden");
+                    document.getElementById("tabs").classList.add("hidden");
+
+                    await generateUserInformation();
                 } catch (error) {
                     localStorage.removeItem("token");
                     showSignIn();

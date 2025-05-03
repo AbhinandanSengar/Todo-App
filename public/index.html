@@ -44,6 +44,13 @@
             <div id="info"></div>
             <button onclick="logout()">Log Out</button>
         </div>
+
+        <div id="todo-section" class="hidden">
+            <h4>Your Todos</h4>
+            <input type="text" id="new-todo" placeholder="Enter a new todo">
+            <button onclick="addTodo()">Add Todo</button>
+            <ul id="todo-list"></ul>
+        </div>
     </div>
 
     <script>
@@ -125,6 +132,71 @@
             document.getElementById("tab-signup").classList.add("active");
         }
 
+        async function fetchTodo() {
+            const token = localStorage.getItem("token");
+            const response = await axios.get("http://localhost:3000/todos", {
+                headers: {
+                    Authorization: token
+                }
+            });
+
+            const todos = response.data.todos;
+            const list = document.getElementById("todo-list");
+            list.innerHTML = "";
+
+            todos.forEach(todo => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    ${todo.completed ? `<s>${todo.todoTitle}</s>`: todo.todoTitle}
+                    <button onclick="markDone(${todo.id})">Done</button>
+                    <button onclick="deleteTodo(${todo.id})">Delete</button>
+                `;
+                list.appendChild(li);
+            });
+        }
+
+        async function addTodo() {
+            const token = localStorage.getItem("token");
+            const todoTitle = document.getElementById("new-todo").value;
+
+            if(!todoTitle) {
+                alert("Please enter a Todo");
+                return;
+            }
+
+            await axios.post("http://localhost:3000/todos", { todoTitle }, {
+                headers: {
+                    Authorization: token
+                }
+            });
+
+            document.getElementById("new-todo").value = "";
+            fetchTodo();
+        }
+
+        async function markDone(id) {
+            const token = localStorage.getItem("token");
+
+            await axios.put(`http://localhost:3000/todos/${id}/done`, {}, {
+                headers: {
+                    Authorization: token
+                }
+            });
+
+            fetchTodo();
+        }
+
+        async function deleteTodo(id) {
+            const token = localStorage.getItem("token");
+
+            await axios.delete(`http://localhost:3000/todos/${id}`, {
+                headers: {
+                    Authorization: token
+                }
+            });
+            fetchTodo();
+        }
+
         window.onload = async function () {
             const token = localStorage.getItem("token");
 
@@ -141,7 +213,10 @@
                     document.getElementById("welcome-text").classList.add("hidden");
                     document.getElementById("tabs").classList.add("hidden");
 
+                    document.getElementById("todo-section").classList.remove("hidden");
+                    fetchTodo();
                     await generateUserInformation();
+
                 } catch (error) {
                     localStorage.removeItem("token");
                     showSignIn();

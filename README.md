@@ -1,37 +1,25 @@
-# Todo-App
-
-A simple and intuitive Todo Application built with HTML, CSS, and JavaScript (Frontend), and Node.js with Express.js on the Backend. The app includes Sign Up, Sign In, and JWT-based Authentication to securely manage user sessions. User profile details are displayed after login.
+A full-stack Todo Application that allows users to register, log in, and manage their tasks. Built with vanilla HTML/CSS/JS on the frontend and Node.js with Express on the backend, the app uses JWT for authentication and MongoDB for persistent storage. This project demonstrates core concepts of full-stack development, including RESTful APIs, authentication, and CRUD operations.
 
 🔧 Tech Stack
+Frontend: HTML, CSS, JavaScript
 
-Frontend
+Backend: Node.js, Express.js
 
-HTML5
+Authentication: JWT (JSON Web Tokens)
 
-CSS3
+Database: MongoDB
 
-JavaScript
+API Style: RESTful APIs
 
-Axios (for HTTP requests)
+✨ Features
+User Registration & Login
 
-Backend
+Secure Authentication with JWT
 
-Node.js
+Create, Read, Update, and Delete (CRUD) Todos
 
-Express.js
+Persistent storage of todos using MongoDB
 
-JSON Web Token (JWT)
+Clean UI with responsive design
 
-🚀 Features
-
-🔐 JWT-based authentication
-
-👤 Sign Up and Sign In forms with form validation
-
-🔄 Tab switch between Sign In and Sign Up
-
-👁️ View profile after login
-
-🔒 Protected routes using middleware
-
-🎨 Clean and responsive UI
+RESTful client-server communication

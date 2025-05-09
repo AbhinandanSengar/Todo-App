@@ -1,25 +1,30 @@
-A full-stack Todo Application that allows users to register, log in, and manage their tasks. Built with vanilla HTML/CSS/JS on the frontend and Node.js with Express on the backend, the app uses JWT for authentication and MongoDB for persistent storage. This project demonstrates core concepts of full-stack development, including RESTful APIs, authentication, and CRUD operations.
+This is a fullstack Todo application built using HTML/CSS/JavaScript for the frontend, Node.js/Express/MongoDB for the backend, and JWT for authentication. It uses Zod for runtime validation and Bcrypt.js for secure password hashing.
 
-🔧 Tech Stack
+<h2>✨ Features</h2>
+User Authentication (Sign Up, Log In)
+
+Create, Update, and Delete Todos
+
+Persistent Data Storage with MongoDB
+
+JWT-based Authentication
+
+Data Validation with Zod
+
+<h2>Usage</h2>
+Secure user authentication through JWT.
+
+Todos can be added, updated, and deleted, with validation via Zod to ensure correct data formatting.
+
+<h2>⛭ Tech Stack</h2>
 Frontend: HTML, CSS, JavaScript
 
-Backend: Node.js, Express.js
-
-Authentication: JWT (JSON Web Tokens)
+Backend: Node.js, Express
 
 Database: MongoDB
 
-API Style: RESTful APIs
+Authentication: JWT (JSON Web Tokens)
 
-✨ Features
-User Registration & Login
+Validation: Zod
 
-Secure Authentication with JWT
-
-Create, Read, Update, and Delete (CRUD) Todos
-
-Persistent storage of todos using MongoDB
-
-Clean UI with responsive design
-
-RESTful client-server communication
+Password Hashing: Bcrypt.js

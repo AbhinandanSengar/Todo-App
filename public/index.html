@@ -1,16 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Todo Application</title>
+    <title>Todo App</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.7.7/axios.min.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
-    <div class="card">
+    <div id="card">
         <h1>Todos</h1>
         <p class="subtitle" id="welcome-text">Welcome! Please enter your details</p>
 
@@ -20,34 +18,38 @@
         </div>
 
         <div id="signin">
-            <label for="signin-username">Username</label>
-            <input type="text" id="signin-username" placeholder="Enter your username">
+            <label for="signin-email">Email</label>
+            <input type="text" id="signin-email" placeholder="Enter your email">
+
             <label for="signin-password">Password</label>
             <input type="password" id="signin-password" placeholder="Enter your password">
+
             <button onclick="signin()">Sign In</button>
         </div>
 
         <div id="signup" class="hidden">
             <label for="signup-name">Name</label>
             <input type="text" id="signup-name" placeholder="Enter your name">
-            <label for="signup-username">Username</label>
-            <input type="text" id="signup-username" placeholder="Enter your username">
+            
             <label for="signup-email">Email</label>
-            <input type="email" id="signup-email" placeholder="Enter your email">
+            <input type="text" id="signup-email" placeholder="Enter your email">
+
             <label for="signup-password">Password</label>
             <input type="password" id="signup-password" placeholder="Enter your password">
+
             <button onclick="signup()">Sign Up</button>
         </div>
 
         <div id="user-info" class="hidden">
-            <h3>User Information</h3>
+            <h4>User Information</h4>
             <div id="info"></div>
-            <button onclick="logout()">Log Out</button>
+            <button class="btn-delete" onclick="logout()">Log Out</button>
         </div>
 
         <div id="todo-section" class="hidden">
             <h4>Your Todos</h4>
-            <input type="text" id="new-todo" placeholder="Enter a new todo">
+            <input type="text" id="new-todo" placeholder="Enter your new todo">
+            <input type="date" id="due-date" placeholder="Due date">
             <button onclick="addTodo()">Add Todo</button>
             <ul id="todo-list"></ul>
         </div>
@@ -56,66 +58,151 @@
     <script>
         async function signup() {
             const name = document.getElementById("signup-name").value;
-            const username = document.getElementById("signup-username").value;
             const email = document.getElementById("signup-email").value;
             const password = document.getElementById("signup-password").value;
 
-            if (!name || !username || !email || !password) {
-                alert("Please fill in all the details.");
-                return;
+            if(!name || !email || !password) {
+                return alert("Please fill in all the fields");
             }
 
             try {
                 const response = await axios.post("http://localhost:3000/signup", {
                     name,
-                    username,
                     email,
                     password
                 });
                 alert("Signed up successfully");
-            } catch (error) {
-                alert("Signup failed: " + error.response?.data?.message || error.message);
+            } catch(error) {
+                alert("Signup failed: " + (error.response?.data?.message || error.message));
             }
 
             location.reload();
         }
 
         async function signin() {
-            const username = document.getElementById("signin-username").value;
+            const email = document.getElementById("signin-email").value;
             const password = document.getElementById("signin-password").value;
+
+            if(!email || !password) {
+                return alert("Please fill in all the fields");
+            }
 
             try {
                 const response = await axios.post("http://localhost:3000/signin", {
-                    username,
+                    email,
                     password
                 });
 
                 localStorage.setItem("token", response.data.token);
                 alert("Signed in successfully");
+
                 location.reload();
-            } catch (error) {
-                alert("Signin failed: " + error.response?.data?.message || error.message);
+            } catch(error) {
+                alert("Signin failed: " + (error.response?.data?.message || error.message));
             }
         }
 
         async function generateUserInformation() {
             const token = localStorage.getItem("token");
 
-            const response = await axios.get("http://localhost:3000/profile", {
+            const response = await axios.get("http://localhost:3000", {
                 headers: {
                     Authorization: token
                 }
             });
 
-            document.getElementById("info").innerHTML =
-                "Name: " + response.data.name +
-                "<br>Username: " + response.data.username +
-                "<br>Email: " + response.data.email;
+            document.getElementById("info").innerHTML = 
+                "Name: " + response.data.name + "</br>Email: " + response.data.email;
         }
 
-        function logout() {
+        async function logout() {
             localStorage.removeItem("token");
-            location.reload();
+            location.reload(); 
+        }
+
+        async function fetchTodo() {
+            const token = localStorage.getItem("token");
+
+            const response = await axios.get("http://localhost:3000/todos", {
+                headers: {
+                    Authorization: token
+                }
+            });
+
+            const todos = response.data.todos;
+            const list = document.getElementById("todo-list");
+            list.innerHTML = "";
+
+            todos.forEach(todo => {
+                const li = document.createElement("li");
+
+                const createdAt = new Date(todo.createdAt).toLocaleDateString();
+                const updatedAt = new Date(todo.updatedAt).toLocaleDateString();
+                const dueDate = todo.dueDate? new Date(todo.dueDate).toLocaleDateString() : "No due date"
+                li.innerHTML = `
+                    <div class="todo-item">
+                        <div class="todo-content">
+                            <strong>${todo.done ? `<s>${todo.title}</s>` : todo.title}</strong>
+                            <div class="todo-meta">
+                                <small>Created at: ${createdAt}</small>
+                                <small>Updated at: ${updatedAt}</small>
+                                <small>Due: ${dueDate}</small>
+                            </div>
+                        </div>
+                        <div class="todo-actions">
+                            <button class="btn-done" onclick="markDone('${todo._id}')">Mark as Done</button>
+                            <button class="btn-delete" onclick="deleteTodo('${todo._id}')">Delete</button>
+                        </div>
+                    </div>
+                `;
+                list.appendChild(li);
+            });
+        }
+
+        async function addTodo() {
+            const token = localStorage.getItem("token");
+            const todoTitle = document.getElementById("new-todo").value;
+            const dueDate = document.getElementById("due-date").value;
+
+            if(!todoTitle) {
+                return alert("Please enter a new todo");
+            }
+
+            await axios.post("http://localhost:3000/todos",{
+                title: todoTitle,
+                dueDate: dueDate ? new Date(dueDate).toISOString() : null
+            }, {
+                headers: {
+                    Authorization: token
+                }
+            });
+
+            document.getElementById("new-todo").value = "";
+            document.getElementById("due-date").value = "";
+            fetchTodo();
+        }
+
+        async function markDone(id) {
+            const token = localStorage.getItem("token");
+
+            await axios.put(`http://localhost:3000/todos/${id}/done`, {}, {
+                headers: {
+                    Authorization: token
+                }
+            });
+            fetchTodo();
+        }
+
+        async function deleteTodo(id) {
+            const token = localStorage.getItem("token");
+
+            await axios.delete(`http://localhost:3000/todos/${id}`, {
+                headers: {
+                    Authorization: token
+                }
+            });
+
+            fetchTodo();
         }
 
         function showSignIn() {
@@ -132,81 +219,14 @@
             document.getElementById("tab-signup").classList.add("active");
         }
 
-        async function fetchTodo() {
-            const token = localStorage.getItem("token");
-            const response = await axios.get("http://localhost:3000/todos", {
-                headers: {
-                    Authorization: token
-                }
-            });
-
-            const todos = response.data.todos;
-            const list = document.getElementById("todo-list");
-            list.innerHTML = "";
-
-            todos.forEach(todo => {
-                const li = document.createElement('li');
-                li.innerHTML = `
-                    <span class="todo-text">${todo.completed ? `<s>${todo.todoTitle}</s>`: todo.todoTitle}</span>
-                    <div class="todo-actions">
-                        <button id="smallButton" onclick="markDone(${todo.id})">Mark as Done</button>
-                        <button id="smallButton" onclick="deleteTodo(${todo.id})">Delete</button>
-                    </div>
-                `;
-                list.appendChild(li);
-            });
-        }
-
-        async function addTodo() {
-            const token = localStorage.getItem("token");
-            const todoTitle = document.getElementById("new-todo").value;
-
-            if(!todoTitle) {
-                alert("Please enter a Todo");
-                return;
-            }
-
-            await axios.post("http://localhost:3000/todos", { todoTitle }, {
-                headers: {
-                    Authorization: token
-                }
-            });
-
-            document.getElementById("new-todo").value = "";
-            fetchTodo();
-        }
-
-        async function markDone(id) {
-            const token = localStorage.getItem("token");
-
-            await axios.put(`http://localhost:3000/todos/${id}/done`, {}, {
-                headers: {
-                    Authorization: token
-                }
-            });
-
-            fetchTodo();
-        }
-
-        async function deleteTodo(id) {
-            const token = localStorage.getItem("token");
-
-            await axios.delete(`http://localhost:3000/todos/${id}`, {
-                headers: {
-                    Authorization: token
-                }
-            });
-            fetchTodo();
-        }
-
-        window.onload = async function () {
+        window.onload = async function() {
             const token = localStorage.getItem("token");
 
             const signup = document.getElementById("signup");
             const signin = document.getElementById("signin");
             const userinfo = document.getElementById("user-info");
 
-            if (token) {
+            if(token) {
                 try {
                     signin.classList.add("hidden");
                     signup.classList.add("hidden");
@@ -218,8 +238,7 @@
                     document.getElementById("todo-section").classList.remove("hidden");
                     fetchTodo();
                     await generateUserInformation();
-
-                } catch (error) {
+                } catch(error) {
                     localStorage.removeItem("token");
                     showSignIn();
                 }

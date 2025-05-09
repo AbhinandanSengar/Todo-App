@@ -13,7 +13,7 @@ JWT-based Authentication
 
 Data Validation with Zod
 
-<h2>Usage</h2>
+<h2>🧲 Usage</h2>
 Secure user authentication through JWT.
 
 Todos can be added, updated, and deleted, with validation via Zod to ensure correct data formatting.

@@ -1,3 +1,5 @@
+# Fullstack Todo App with Authentication
+
 This is a fullstack Todo application built using HTML/CSS/JavaScript for the frontend, Node.js/Express/MongoDB for the backend, and JWT for authentication. It uses Zod for runtime validation and Bcrypt.js for secure password hashing.
 
 <h2>✨ Features</h2>
